@@ -1,11 +1,10 @@
 === Cooked - Recipe Plugin ===
 Contributors: boxystudio
-Donate link: https://paypal.me/boxypayment
 Tags: recipe, recipes, food, cooking, chef, culinary, nutrition, seo
 Requires at least: 4.7
-Tested up to: 5.0
-Stable tag: 1.6
-Requires PHP: 7.0
+Tested up to: 5.5.1
+Stable tag: 1.7.8.1
+Requires PHP: 5.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -69,20 +68,78 @@ This version is **not** the same plugin. It has been completely rebuilt from the
 
 == Screenshots ==
 
-1. Adding Ingredients
-2. Adding Directions
-3. Recipe Template
-4. Nutrition Facts
-5. Interactive Cooking Timers
-5. Gallery Builder
-6. Recipe Shortcodes
+1. Recipe Display
+2. Adding Ingredients
+3. Adding Directions
+4. Recipe Template
+5. Nutrition Facts
+6. Cooking Timers
+7. Gallery Builder
+8. Recipe Shortcodes
 
 == Upgrade Notice ==
 
-= 1.6 =
-Support for WordPress 5.0 and some other minor updates.
+Version 1.7.8 fixes a few PHP 7.4 bugs and now replaces page titles on taxonomy pages when the Browse Recipes page is used.
 
 == Changelog ==
+
+= 1.7.8.1 =
+* **FIX:** Patch release for some quick taxonomy title fixes.
+
+= 1.7.8 =
+* **FIX:** Page titles are now updated on taxonomy pages (categories) when Browse Recipes page is used.
+* **FIX:** An additional quick PHP 7.4 fix.
+
+= 1.7.7 =
+* **FIX:** Support for PHP 7.4 and WordPress 5.5.
+
+= 1.7.6 =
+* **NEW:** An optional recipe field has been added for "SEO Description". In the Recipe Schema output, this field will take precedence over the "Excerpt" field.
+* **NEW:** Added a new "Advanced" option to disable the recipe schema output that Cooked generates.
+* **FIX:** Fixed the 404 errors on Fotorama PNGs.
+* **FIX:** Fixed the issues with videos not playing in the Cooked Gallery.
+* **FIX:** If Servings are set to "1", you can now Half and Quarter them in the Servings Switcher.
+* **TWEAK:** Widgets with images now load thumbnail sizes instead of the larger ones.
+
+= 1.7.5.2 =
+* **TWEAK:** Adds support for Cooked Pro 1.7.
+
+= 1.7.4 =
+* **TWEAK:** Moved Fotorama assets into plugin instead of relying on a CDN connection.
+* **TWEAK:** Removed "imagesLoaded" script (no longer needed).
+* **TWEAK:** Added new filter to single ingredient output (cooked_single_ingredient_html)
+
+= 1.7.3 =
+* **FIX:** A minor fix (thank you to @zorkman777)
+
+= 1.7.2 =
+* **FIX:** Adds support for Cooked Pro v1.6 (redirect fixes)
+
+= 1.7.1 =
+* **TWEAK:** WordPress 5.2 support
+* **FIX:** Fixed an issue with the recipe list style changing back to default when using the "Load More on Scroll" and "Load More Button" pagination types.
+
+= 1.7 =
+* **NEW:** Design tweaks throughout.
+* **NEW:** Removed masonry javascript and let the recipe grid line up automatically with CSS.
+* **NEW:** Browse dropdown now includes both parent and child taxonomies. Long lists get a scrollable area.
+* **NEW:** Added an "exclude" property to the `[cooked-browse]` shortcode. You can now exclude specific recipes by their ID. [Learn More](https://demos.boxystudio.com/cooked/)
+* **NEW:** Added a "ding" sound to the end of timers. Use the "cooked_timer_sound_mp3" filter to change the MP3 file to anything you'd like (needs to be a publically available URL). [Learn More](https://demos.boxystudio.com/cooked/)
+* **FIX:** Fixed some missing ingredient fractions.
+* **FIX:** Fixed some minor PHP warnings.
+
+= 1.6.4 =
+* **NEW:** Added a widget to display a list of Recipe Categories.
+
+= 1.6.3 =
+* **FIX:** Minor fixes for recipe "Browse Page" breadcrumbs.
+* **TWEAK:** Added new icon for BigOven save button (Pro feature).
+
+= 1.6.2 =
+* **FIX:** Added support for custom permalinks with slashes (i.e. "our-food/recipes").
+
+= 1.6.1 =
+* **FIX:** Fixed a bug with the search form when multiple searh forms are on one page.
 
 = 1.6 =
 * **NEW:** WordPress 5.0 support.

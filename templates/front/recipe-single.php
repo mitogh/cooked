@@ -2,9 +2,14 @@
 
 global $recipe,$recipe_settings,$recipe_classes,$_cooked_settings;
 
+if ( !is_array( $recipe ) )
+    return false;
+
+$recipe_array = $recipe;
 $recipe_post = get_post( $recipe['id'] );
 $recipe_settings = Cooked_Recipes::get( $recipe['id'], true );
 $recipe_classes = ( !$recipe_classes ? apply_filters( 'cooked_single_recipe_classes', array( 'cooked-recipe', 'has-post-thumbnail' ), $recipe ) : apply_filters( 'cooked_single_recipe_classes', $recipe_classes, $recipe ) );
+$recipe = $recipe_array;
 if ( is_array($recipe_classes) && !empty($recipe_classes) ):
 	array_walk($recipe_classes, 'esc_attr');
 else:
@@ -17,7 +22,7 @@ echo '<article class="' . implode( ' ', $recipe_classes ) . ' cooked-recipe-card
 
     do_action( 'cooked_recipe_grid_before_image', $recipe );
 
-    echo ( has_post_thumbnail( $recipe['id'] ) ? '<a href="' . esc_url( get_permalink( $recipe['id'] ) ) . '" class="cooked-recipe-card-image">' . get_the_post_thumbnail( $recipe['id'], 'cooked-medium' ) . '</a>' : '<span class="cooked-recipe-image-empty"></span>' );
+    echo ( has_post_thumbnail( $recipe['id'] ) ? '<a href="' . esc_url( get_permalink( $recipe['id'] ) ) . '" class="cooked-recipe-card-image" style="background-image:url(' . get_the_post_thumbnail_url( $recipe['id'], 'cooked-medium' ) . ');"></a>' : '<span class="cooked-recipe-image-empty"></span>' );
 
     do_action( 'cooked_recipe_grid_after_image', $recipe );
 

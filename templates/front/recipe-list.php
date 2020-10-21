@@ -2,6 +2,8 @@
 
 global $recipes,$recipe,$_cooked_settings,$recipe_args,$current_recipe_page,$atts,$list_id_counter;
 
+$atts['layout'] = ( !isset($atts['layout']) || isset($atts['layout']) && !$atts['layout'] ? $_cooked_settings['recipe_list_style'] : $atts['layout'] );
+
 $author_template_override = false;
 $is_author_page = ( !isset($atts['skip_heading']) && !empty($recipes) && isset($recipe_args['author_name']) && $recipe_args['author_name'] || !isset($atts['skip_heading']) && !empty($recipes) && isset($recipe_args['author']) && $recipe_args['author'] ? true : false );
 
@@ -59,16 +61,19 @@ else:
             case 'cp_recipe_tags':
                 $shortcode = 'tags';
             break;
+            case 'cp_recipe_diet':
+                $shortcode = 'diets';
+            break;
         endswitch;
         $tax_slug = $recipe_args['tax_query'][0]['terms'][0];
         $child_taxonomies = do_shortcode( '[cooked-' . esc_attr( $shortcode ) . ' child_of="' . esc_attr( $tax_slug ) . '"]' );
     endif;
 
 	if ( $child_taxonomies ):
-
 		echo $child_taxonomies;
+	endif;
 
-	elseif ( !empty($recipes) && !isset( $recipes['raw'] ) && count($recipes) >= 1 || !empty($recipes) && isset( $recipes['raw'] ) && count($recipes) > 1 ):
+    if ( !empty($recipes) && !isset( $recipes['raw'] ) && count($recipes) >= 1 || !empty($recipes) && isset( $recipes['raw'] ) && count($recipes) > 1 ):
 
 		$list_id_counter++;
 		$recipe_list_style = apply_filters( 'cooked_recipe_list_style', array( 'grid' => 'Cooked_Recipes' ), $atts['layout'] );
@@ -76,9 +81,7 @@ else:
 		$ls_method = 'list_style_' . $list_style;
 		$ls_class = current( $recipe_list_style );
 
-		$masonry_layouts = apply_filters( 'cooked_masonry_layouts', array( 'grid' ) );
-
-		echo '<section id="cooked-recipe-list-' . $list_id_counter . '" class="cooked-clearfix cooked-recipe-' . $list_style . ' cooked-recipe-loader' . ( in_array( $list_style, $masonry_layouts ) ? ' cooked-masonry' : '' ) . ( isset($atts['columns']) && $atts['columns'] ? ' cooked-columns-' . $atts['columns'] : '' ) . '">';
+		echo '<section id="cooked-recipe-list-' . $list_id_counter . '" class="cooked-clearfix cooked-recipe-' . $list_style . ' cooked-recipe-loader' . ( isset($atts['columns']) && $atts['columns'] ? ' cooked-columns-' . $atts['columns'] : '' ) . '">';
 
 		foreach( $recipes as $key => $recipe ):
 
@@ -96,8 +99,6 @@ else:
 			echo Cooked_Recipes::pagination( $recipes['raw'], $recipe_args );
 		endif;
 
-		if ( in_array( $list_style, $masonry_layouts ) ): wp_enqueue_script( 'cooked-masonry' ); endif;
-		wp_enqueue_script( 'cooked-imagesLoaded' );
 		wp_enqueue_script( 'cooked-appear-js' );
 
 	else:

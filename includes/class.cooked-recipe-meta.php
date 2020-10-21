@@ -330,6 +330,11 @@ function cooked_render_recipe_fields( $post_id ) {
 					<p><textarea name="_recipe_settings[excerpt]"><?php echo ( isset($recipe_settings['excerpt']) ? $recipe_settings['excerpt'] : '' ); ?></textarea></p>
 				</div>
 
+                <div class="recipe-setting-block">
+                    <h3 class="cooked-settings-title"><?php esc_html_e( 'SEO Description', 'cooked' ); ?><span class="cooked-tooltip cooked-tooltip-icon" title="<?php echo esc_attr( esc_html__( 'This description is used for SEO purposes and is optional. By default, Cooked will use the Recipe Excerpt above if available or the Recipe Title if not.','cooked') ); ?>"><i class="cooked-icon cooked-icon-question"></i></span></h3>
+                    <p><textarea name="_recipe_settings[seo_description]"><?php echo ( isset($recipe_settings['seo_description']) ? $recipe_settings['seo_description'] : '' ); ?></textarea></p>
+                </div>
+
 				<div class="recipe-setting-block">
 					<div class="cooked-clearfix">
 
@@ -475,8 +480,10 @@ function cooked_render_recipe_fields( $post_id ) {
 			<div class="recipe-setting-block">
 
 				<p>
+                    <?php do_action( 'cooked_ingredient_buttons_start' ); ?>
 					<a href="#" class="button cooked-add-ingredient-button"><?php esc_html_e('Add Ingredient','cooked'); ?></a>
 					&nbsp;<a href="#" class="button cooked-add-heading-button"><?php esc_html_e('Add Section Heading','cooked'); ?></a>
+                    <?php do_action( 'cooked_ingredient_buttons_end' ); ?>
 				</p>
 
 				<!-- TEMPLATES -->
@@ -734,7 +741,7 @@ function cooked_render_recipe_fields( $post_id ) {
 								endforeach; ?>
 							</ul>
 
-							<p class="cooked-daily-value-text"><?php esc_html_e('Percent Daily Values are based on a 2,000 calorie diet. Your daily value may be higher or lower depending on your calorie needs.','cooked'); ?></p>
+							<p class="cooked-daily-value-text">* <?php esc_html_e( 'Percent Daily Values are based on a 2,000 calorie diet. Your daily value may be higher or lower depending on your calorie needs.', 'cooked' ); ?></p>
 
 						</section>
 					</div>

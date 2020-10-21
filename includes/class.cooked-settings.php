@@ -88,7 +88,6 @@ class Cooked_Settings {
 		if ( $update_settings ): update_option( 'cooked_settings', $_cooked_settings ); endif;
 		if ( $version_compare < 0 ):
 			update_option( 'cooked_settings_version', COOKED_VERSION );
-			flush_rewrite_rules(false);
 		endif;
 
 		return apply_filters( 'cooked_get_settings', $_cooked_settings );
@@ -207,7 +206,8 @@ class Cooked_Settings {
 					'options' => apply_filters( 'cooked_advanced_options', array(
 						'disable_public_recipes' => '<strong>' . esc_html__('Disable Public Recipes','cooked') . '</strong> &mdash; ' . sprintf( esc_html__('Only show recipes using the %s shortcode.','cooked'), '<code>[cooked-recipe]</code>' ),
 						'disable_meta_tags' => '<strong>' . sprintf( esc_html__('Disable %s Tags','cooked'), 'Cooked <code>&lt;meta&gt;</code>' ) . '</strong> &mdash; ' . esc_html__('Prevents duplicates when tags already exist.','cooked'),
-						'disable_servings_switcher' => '<strong>' . esc_html__('Disable "Servings Switcher"','cooked') . '</strong> &mdash; ' . esc_html__( 'Removes the servings dropdown on recipes.', 'cooked' )
+						'disable_servings_switcher' => '<strong>' . esc_html__('Disable "Servings Switcher"','cooked') . '</strong> &mdash; ' . esc_html__( 'Removes the servings dropdown on recipes.', 'cooked' ),
+						'disable_schema_output' => '<strong>' . esc_html__('Disable Recipe Schema Output','cooked') . '</strong> &mdash; ' . esc_html__( 'You should only do this if you\'re using something else to output schema information.', 'cooked' )
 					))
 				),
 			)
@@ -326,7 +326,7 @@ class Cooked_Settings {
 		if( !empty($pages) ) :
 			$page_array[0] = $choose_text;
 			foreach($pages as $_page) :
-				$page_array[$_page->ID] = get_the_title($_page->ID);
+				$page_array[$_page->ID] = $_page->post_title;
 			endforeach;
 		elseif( $none_text ):
 			$page_array[0] = $none_text;
@@ -336,7 +336,7 @@ class Cooked_Settings {
 
 	}
 
-	public static function terms_array( $term,$choose_text,$none_text = false,$hide_empty = false,$parents_only = false,$child_of = false ){
+	public static function terms_array( $term, $choose_text, $none_text = false, $hide_empty = false, $parents_only = false, $child_of = false ){
 
 		$terms_array = array();
 
@@ -531,7 +531,7 @@ class Cooked_Settings {
 					echo '<input type="hidden" name="cooked_settings[' . $field_name . '][]" value="' . $value . '">';
 					echo '<input' . $combined_extras . ' class="cooked-switch' . ( $color ? '-' . $color : '' ) . '" type="checkbox" id="checkbox-group-' . $field_name . '-' . $value . '"' . ( isset( $_cooked_settings[$field_name] ) && !empty($_cooked_settings[$field_name]) && in_array( $value, $_cooked_settings[$field_name] ) || $is_disabled ? ' checked' : '' ) . '/>';
 				else:
-					echo '<input' . $combined_extras . ' class="cooked-switch' . ( $color ? '-' . $color : '' ) . '" type="checkbox" id="checkbox-group-' . $field_name . '-' . $value . '" name="cooked_settings[' . $field_name . '][]" value="' . $value . '"' . ( isset( $_cooked_settings[$field_name] ) && !empty($_cooked_settings[$field_name]) && in_array( $value, $_cooked_settings[$field_name] ) || $is_disabled ? ' checked' : '' ) . '/>';
+					echo '<input' . $combined_extras . ' class="cooked-switch' . ( $color ? '-' . $color : '' ) . '" type="checkbox" id="checkbox-group-' . $field_name . '-' . $value . '" name="cooked_settings[' . $field_name . '][]" value="' . $value . '"' . ( isset( $_cooked_settings[$field_name] ) && !empty($_cooked_settings[$field_name]) && is_array( $_cooked_settings[$field_name] ) && in_array( $value, $_cooked_settings[$field_name] ) || $is_disabled ? ' checked' : '' ) . '/>';
 				endif;
 				echo '&nbsp;<label for="checkbox-group-' . $field_name . '-' . $value . '">' . $name . '</label>';
 				echo '<br>';

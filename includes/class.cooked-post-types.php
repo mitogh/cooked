@@ -34,7 +34,40 @@ class Cooked_Post_Types {
 		add_filter( 'query_vars', array( &$this, 'add_query_vars_filter' ) );
 		add_filter( 'manage_cp_recipe_posts_columns', array( &$this, 'custom_columns' ) );
 		add_filter( 'nav_menu_css_class', array( &$this, 'cooked_nav_classes' ), 10, 2 );
+		
+		// Taxonomy Titles
+		add_action( 'template_redirect', array( &$this, 'remove_default_title_tag' ) );
+		add_filter( 'the_title', array( &$this, 'taxonomy_page_title' ), 10, 2 );
+		add_filter( 'wp_title', array( &$this, 'taxonomy_meta_title' ), 10 );
 
+	}
+	
+	public static function taxonomy_meta_title( $title = '' ){
+		
+		global $wp_query, $post, $_cooked_settings;
+		$browse_page_id = $_cooked_settings['browse_page'];
+		
+		if ( $id == $browse_page_id && isset($wp_query->query['cp_recipe_category']) && taxonomy_exists('cp_recipe_category') && term_exists( $wp_query->query['cp_recipe_category'], 'cp_recipe_category' ) ):
+			$cooked_term = get_term_by( 'slug', $wp_query->query['cp_recipe_category'], 'cp_recipe_category' );
+			return $cooked_term->name;
+		endif;
+		
+		return $title;
+		
+	}
+	
+	public static function taxonomy_page_title( $title = '', $id = 0 ){
+		
+		global $wp_query, $post, $_cooked_settings;
+		$browse_page_id = $_cooked_settings['browse_page'];
+		
+		if ( $id == $browse_page_id && isset($wp_query->query['cp_recipe_category']) && taxonomy_exists('cp_recipe_category') && term_exists( $wp_query->query['cp_recipe_category'], 'cp_recipe_category' ) ):
+			$cooked_term = get_term_by( 'slug', $wp_query->query['cp_recipe_category'], 'cp_recipe_category' );
+			return $cooked_term->name;
+		endif;
+		
+		return $title;
+		
 	}
 
 	function custom_columns( $columns ) {
@@ -42,7 +75,7 @@ class Cooked_Post_Types {
 		foreach( $columns as $key => $val ):
 			$new_columns[$key] = $val;
 			if ( $key == 'cb' ):
-				$new_columns['featured_image'] = '<i class="cooked-icon cooked-icon-image"></i>';
+				$new_columns['featured_image'] = esc_html__( 'Photo', 'cooked' );
 			endif;
 		endforeach;
 		return $new_columns;
@@ -73,10 +106,20 @@ class Cooked_Post_Types {
 
 	public static function cooked_meta_tags(){
 
-		global $_cooked_settings,$post;
-
+		global $_cooked_settings,$post,$wp_query;
+	
+		if ( isset($wp_query->query['cp_recipe_category']) && taxonomy_exists('cp_recipe_category') && term_exists( $wp_query->query['cp_recipe_category'], 'cp_recipe_category' ) ):
+			$cooked_term = get_term_by( 'slug', $wp_query->query['cp_recipe_category'], 'cp_recipe_category' );
+		endif;
+		
 		if ( isset($_cooked_settings['advanced']) && !empty($_cooked_settings['advanced']) && in_array( 'disable_meta_tags', $_cooked_settings['advanced'] ) )
 			return false;
+			
+		if ( isset( $cooked_term ) && $cooked_term->name ):
+			?><title><?php echo $cooked_term->name . ' / ' . get_bloginfo('name'); ?></title>
+			<meta property="og:title" content="<?php echo esc_attr( $cooked_term->name ); ?>">
+			<meta property="og:description" content="<?php echo esc_attr( $cooked_term->description ); ?>"><?php
+		endif;
 
 		if ( isset( $post->post_type ) && $post->post_type == 'cp_recipe' ):
 
@@ -106,6 +149,13 @@ class Cooked_Post_Types {
 	public static function add_query_vars_filter( $vars ){
 		$vars[] = "servings";
 		return $vars;
+	}
+	
+	public function remove_default_title_tag(){
+		global $wp_query;
+		if ( isset($wp_query->query['cp_recipe_category']) && taxonomy_exists('cp_recipe_category') && term_exists( $wp_query->query['cp_recipe_category'], 'cp_recipe_category' ) ):
+			remove_action( 'wp_head', '_wp_render_title_tag', 1 );
+		endif;
 	}
 
 	public function redirects(){
@@ -137,6 +187,8 @@ class Cooked_Post_Types {
 						endif;
 					endif;
 				endif;
+			else:
+				do_action( 'cooked_redirects' );
 			endif;
 		endif;
 
@@ -163,10 +215,46 @@ class Cooked_Post_Types {
 
 		if(!empty($_GET['settings-updated'])) {
 
+			// Recipe Permalink
+			$permalink_parts = explode( '/', $_cooked_settings['recipe_permalink'] );
+			if ( isset( $permalink_parts[1] ) ):
+				foreach( $permalink_parts as $key => $part ):
+					$part = sanitize_title_with_dashes( $part, null, 'save');
+					$permalink_parts[$key] = sanitize_title_with_dashes( $part, null, 'save');
+				endforeach;
+				$recipe_permalink = implode( '/', $permalink_parts );
+			else:
+				$recipe_permalink = sanitize_title_with_dashes( $_cooked_settings['recipe_permalink'], null, 'save');
+			endif;
+
+			// Recipe Author Permalink
+			$permalink_parts = explode( '/', $_cooked_settings['recipe_author_permalink'] );
+			if ( isset( $permalink_parts[1] ) ):
+				foreach( $permalink_parts as $key => $part ):
+					$part = sanitize_title_with_dashes( $part, null, 'save');
+					$permalink_parts[$key] = sanitize_title_with_dashes( $part, null, 'save');
+				endforeach;
+				$recipe_author_permalink = implode( '/', $permalink_parts );
+			else:
+				$recipe_author_permalink = sanitize_title_with_dashes( $_cooked_settings['recipe_author_permalink'], null, 'save');
+			endif;
+
+			// Recipe Category Permalink
+			$permalink_parts = explode( '/', $_cooked_settings['recipe_category_permalink'] );
+			if ( isset( $permalink_parts[1] ) ):
+				foreach( $permalink_parts as $key => $part ):
+					$part = sanitize_title_with_dashes( $part, null, 'save');
+					$permalink_parts[$key] = sanitize_title_with_dashes( $part, null, 'save');
+				endforeach;
+				$recipe_category_permalink = implode( '/', $permalink_parts );
+			else:
+				$recipe_category_permalink = sanitize_title_with_dashes( $_cooked_settings['recipe_category_permalink'], null, 'save');
+			endif;
+
 			$taxonomy_settings_update = apply_filters( 'cooked_taxonomy_settings_update', array(
-					'recipe_permalink' => ( !$_cooked_settings['recipe_permalink'] ? 'recipes' : sanitize_title_with_dashes( $_cooked_settings['recipe_permalink'], null, 'save' ) ),
-					'recipe_author_permalink' => ( !$_cooked_settings['recipe_author_permalink'] || 'author' == $_cooked_settings['recipe_author_permalink'] ? 'recipe-author' : sanitize_title_with_dashes( $_cooked_settings['recipe_author_permalink'], null, 'save' ) ),
-					'recipe_category_permalink' => ( !$_cooked_settings['recipe_category_permalink'] ? 'recipe-category' : sanitize_title_with_dashes( $_cooked_settings['recipe_category_permalink'], null, 'save' ) )
+					'recipe_permalink' => ( !$_cooked_settings['recipe_permalink'] ? 'recipes' : $recipe_permalink ),
+					'recipe_author_permalink' => ( !$_cooked_settings['recipe_author_permalink'] || 'author' == $_cooked_settings['recipe_author_permalink'] ? 'recipe-author' : $recipe_author_permalink ),
+					'recipe_category_permalink' => ( !$_cooked_settings['recipe_category_permalink'] ? 'recipe-category' : $recipe_category_permalink )
 				)
 			);
 

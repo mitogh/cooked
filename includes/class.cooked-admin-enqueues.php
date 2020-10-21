@@ -41,9 +41,8 @@ class Cooked_Admin_Enqueues {
 		// Selectize (searchable select fields)
 		wp_enqueue_style( 'cooked-selectize', COOKED_URL . '/assets/admin/css/selectize/selectize.css' );
     	wp_enqueue_style( 'cooked-selectize-custom', COOKED_URL . '/assets/admin/css/selectize/cooked-selectize.css' );
-    	wp_enqueue_script( 'cooked-selectize', COOKED_URL . '/assets/admin/js/selectize/selectize.min.js', array('jquery'), '0.12.4', true );
-        wp_enqueue_script( 'cooked-microplugin', COOKED_URL . '/assets/admin/js/selectize/microplugin.min.js', array('jquery'), '0.12.4', true );
-        wp_enqueue_script( 'cooked-selectize-dragdrop', COOKED_URL . '/assets/admin/js/selectize/selectize.dragdrop.js', array('jquery'), '0.12.4', true );
+    	wp_enqueue_script( 'cooked-selectize', COOKED_URL . '/assets/admin/js/selectize/selectize.min.js', array('jquery'), '0.12.6', true );
+        wp_enqueue_script( 'cooked-microplugin', COOKED_URL . '/assets/admin/js/selectize/microplugin.min.js', array('jquery'), '0.0.3', true );
 
         // Cooked Widgets JS
     	wp_register_script( 'cooked-widgets', COOKED_URL . '/assets/admin/js/cooked-widgets.js', array('jquery'), COOKED_VERSION, true );
@@ -69,6 +68,7 @@ class Cooked_Admin_Enqueues {
 			'edit.php',
 			'cooked_settings',
 			'cooked_welcome',
+			'cooked_pending',
 			'cooked_pro'
 		);
 

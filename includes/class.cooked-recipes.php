@@ -139,7 +139,7 @@ class Cooked_Recipes {
 
 		$recipe_settings = get_post_meta( $post_id, '_recipe_settings', true );
 
-		if ( !$recipe_settings || empty($recipe_settings) ): $recipe_settings = array(); endif;
+		if ( !is_array( $recipe_settings ) || empty($recipe_settings) ): $recipe_settings = array(); endif;
 		$recipe_settings['title'] = get_the_title( $post_id );
 
 		$recipe_post = get_post($post_id);
@@ -253,7 +253,7 @@ class Cooked_Recipes {
 
 	                echo '<div class="cooked-srl-single' . $has_image_class . '" style="width:100%; max-width:' . $width . '">';
 
-						echo ( has_post_thumbnail($rid) && !$hide_image ? '<div class="cooked-srl-image"><a href="' . esc_url( get_permalink($rid) ) . '">' . get_the_post_thumbnail( $rid, 'cooked-square' ) . '</a></div>' : '' );
+						echo ( has_post_thumbnail($rid) && !$hide_image ? '<div class="cooked-srl-image"><a href="' . esc_url( get_permalink($rid) ) . '">' . get_the_post_thumbnail( $rid, 'thumbnail' ) . '</a></div>' : '' );
 
 						echo '<div class="cooked-srl-content">';
 
@@ -297,7 +297,7 @@ class Cooked_Recipes {
 
     		do_action( 'cooked_recipe_grid_before_image', $recipe );
 
-			echo ( has_post_thumbnail($rid) && !$hide_image ? '<span class="cooked-recipe-card-image">' . get_the_post_thumbnail( $rid, 'cooked-medium' ) . '</span>' : '' );
+			echo ( has_post_thumbnail($rid) && !$hide_image ? '<span class="cooked-recipe-card-image" style="background-image:url(' . get_the_post_thumbnail_url( $recipe['id'], 'cooked-medium' ) . ');"></span>' : '' );
 
 			//do_action( 'cooked_recipe_grid_after_image', $recipe );
 
@@ -493,6 +493,11 @@ class Cooked_Recipes {
 		 	'orderby' => $orderby,
 		 	'order' => ( $atts['order'] ? esc_attr( $atts['order'] ) : $sorting_types[1] )
 		);
+
+		if ( isset($atts['exclude']) && $atts['exclude'] ):
+			$exclude = explode( ',', str_replace( ' ', '', $atts['exclude'] ) );
+			$recipe_args['post__not_in'] = $exclude;
+		endif;
 
 		if ( $text_search ):
 
@@ -745,10 +750,6 @@ class Cooked_Recipes {
 				'double' => array( 'name' => sprintf( esc_html__( 'Double (%s Servings)','cooked'),$double ), 'value' => $double ),
 				'triple' => array( 'name' => sprintf( esc_html__( 'Triple (%s Servings)','cooked'),$triple ), 'value' => $triple ),
 			), $quarter,$half,$default,$double,$triple );
-
-			foreach( $servings_array as $key => $val ):
-				if ( $val['value'] < 1 ): unset( $servings_array[$key] ); endif;
-			endforeach;
 		else:
 			$servings_array = array();
 		endif;
@@ -775,6 +776,8 @@ class Cooked_Recipes {
 
 		$Cooked_Measurements = new Cooked_Measurements();
 		$measurements = $Cooked_Measurements->get();
+
+		ob_start();
 
 		if ( isset($ing['section_heading_name']) && $ing['section_heading_name'] ):
 
@@ -822,12 +825,18 @@ class Cooked_Recipes {
 			else:
 				echo '<div itemprop="recipeIngredient" class="cooked-single-ingredient cooked-ingredient' . ( !$checkboxes ? ' cooked-ing-no-checkbox' : '' ) . '">';
 					echo ( $checkboxes ? '<span class="cooked-ingredient-checkbox">&nbsp;</span>' : '' );
+					do_action( 'cooked_ingredient_after_checkbox', $ing );
 					echo ( $amount ? '<span class="cooked-ing-amount" data-decimal="' . $float_amount . '">' . $amount . '</span> <span class="cooked-ing-measurement">' . $measurement . '</span> ' : '' );
+					do_action( 'cooked_ingredient_after_amount', $ing );
 					echo ( $name ? '<span class="cooked-ing-name">' . $name . '</span>' : '' );
+					do_action( 'cooked_ingredient_after_name', $ing );
 				echo '</div>';
 			endif;
 
 		endif;
+
+		$ing_html = ob_get_clean();
+		echo apply_filters( 'cooked_single_ingredient_html', $ing_html, $ing, $checkboxes, $plain_text );
 
 	}
 
@@ -919,21 +928,35 @@ class Cooked_Recipes {
 						endif;
 
 						if ( in_array( 'cp_recipe_category',$_cooked_settings['recipe_taxonomies']) ):
-							$categories_array = Cooked_Settings::terms_array( 'cp_recipe_category', false, esc_html__('No categories','cooked'), true, true, false );
-							if ( !empty($categories_array) ):
+							$terms_array = Cooked_Settings::terms_array( 'cp_recipe_category', false, esc_html__('No categories','cooked'), true, true, false );
+							if ( !empty($terms_array) ):
 								echo '<span class="cooked-tax-column">';
 									echo '<span class="cooked-tax-column-title">' . esc_html__('Categories','cooked') . '</span>';
-									echo ( $view_all_recipes_url ? '<a href="' . $view_all_recipes_url . '">' . esc_html__('All Categories','cooked') . '</a>' : '' );
-									foreach( $categories_array as $key => $val ):
-										if ( $key ):
-											$term = get_term( $key );
-											$term_link = ( !empty($term) ? get_term_link( $term ) : false );
-											$term_name = apply_filters( 'cooked_term_name', $term->name, $term->ID, $term->taxonomy );
-											echo ( $term_link ? ( isset($active_taxonomy) && $active_taxonomy == $val ? '<strong><i class="cooked-icon cooked-icon-angle-right"></i>&nbsp;&nbsp;' : '' ) . '<a href="' . $term_link . '">' . $term_name . '</a>' . ( isset($active_taxonomy) && $active_taxonomy == $val ? '</strong>' : '' ) : '' );
-											$total_taxonomies++;
-										endif;
-									endforeach;
-									$tax_col_count++;
+									echo '<div class="cooked-tax-scrollable">';
+										echo ( $view_all_recipes_url ? '<a href="' . $view_all_recipes_url . '">' . esc_html__( 'All Categories','cooked' ) . '</a>' : '' );
+										foreach( $terms_array as $key => $val ):
+											if ( $key ):
+												$term = get_term( $key );
+												$term_link = ( !empty($term) ? get_term_link( $term ) : false );
+												$term_name = apply_filters( 'cooked_term_name', $term->name, $term->ID, $term->taxonomy );
+												echo ( $term_link ? ( isset($active_taxonomy) && $active_taxonomy == $val ? '<strong><i class="cooked-icon cooked-icon-angle-right"></i>&nbsp;&nbsp;' : '' ) . '<a href="' . $term_link . '">' . $term_name . '</a>' . ( isset($active_taxonomy) && $active_taxonomy == $val ? '</strong>' : '' ) : '' );
+												$total_taxonomies++;
+												$sub_terms_array = Cooked_Settings::terms_array( 'cp_recipe_category', false, false, true, false, $key );
+												if ( !empty($sub_terms_array) ):
+													foreach( $sub_terms_array as $sub_key => $sub_val ):
+														if ( $sub_key ):
+															$sub_term = get_term( $sub_key );
+															$sub_term_link = ( !empty($sub_term) ? get_term_link( $sub_term ) : false );
+															$sub_term_name = apply_filters( 'cooked_term_name', $sub_term->name, $sub_term->ID, $sub_term->taxonomy );
+															echo ( $sub_term_link ? '<span class="cooked-tax-sub-item">' . ( isset($active_taxonomy) && $active_taxonomy == $sub_val ? '<strong><i class="cooked-icon cooked-icon-angle-right"></i>&nbsp;&nbsp;' : '' ) . '<a href="' . $sub_term_link . '">' . $sub_term_name . '</a>' . ( isset($active_taxonomy) && $active_taxonomy == $sub_val ? '</strong>' : '' ) . '</span>' : '' );
+															$total_taxonomies++;
+														endif;
+													endforeach;
+												endif;
+											endif;
+										endforeach;
+										$tax_col_count++;
+									echo '</div>';
 								echo '</span>';
 							endif;
 						endif;
@@ -984,10 +1007,10 @@ class Cooked_Recipes {
 					echo '<input type="hidden" name="' . $recipe_args['tax_query'][0]['taxonomy'] . '" value="' . $recipe_args['tax_query'][0]['terms'][0] . '">';
 				endif;
 
-				if ( is_array( $recipe_args['orderby'] ) ):
+				if ( isset( $recipe_args['orderby'] ) && is_array( $recipe_args['orderby'] ) ):
 					$sorting_type = key($recipe_args['orderby']) . '_' . current( $recipe_args['orderby'] );
 				else:
-					$sorting_type = $recipe_args['orderby'] . '_' . $recipe_args['order'];
+					$sorting_type = ( isset( $recipe_args['orderby'] ) && isset( $recipe_args['order'] ) ? $recipe_args['orderby'] . '_' . $recipe_args['order'] : 'date_desc' );
 				endif;
 
 				$sorting_types = apply_filters( 'cooked_browse_sorting_types', array(
@@ -1031,7 +1054,11 @@ class Cooked_Recipes {
 
 		global $wp_query, $post, $_cooked_content_unfiltered;
 
-		if ( is_singular('cp_recipe') && is_main_query() && $_cooked_content_unfiltered == false && in_the_loop () ):
+		if ( post_password_required() ):
+			return $content;
+		endif;
+
+		if ( is_singular('cp_recipe') && is_main_query() && $_cooked_content_unfiltered == false ):
 
 			ob_start();
 			load_template( COOKED_DIR . 'templates/front/recipe.php', false );
@@ -1179,8 +1206,8 @@ class Cooked_Recipes {
 			$recipe_settings['gallery']['type'] = 'cooked';
 		endif;
 
-		$recipe_settings['nutrition']['serving_size'] = ( isset($c2_recipe_settings['_cp_recipe_nutrition_servingsize']) && $c2_recipe_settings['_cp_recipe_nutrition_servingsize'] ? $c2_recipe_settings['_cp_recipe_nutrition_servingsize'] : false );
-		$recipe_settings['nutrition']['servings'] = ( isset($c2_recipe_settings['_cp_recipe_yields']) && $c2_recipe_settings['_cp_recipe_yields'] ? preg_replace("/[^0-9]/","",$c2_recipe_settings['_cp_recipe_yields']) : false );
+		$recipe_settings['nutrition']['serving_size'] = ( isset($c2_recipe_settings['_cp_recipe_yields']) && $c2_recipe_settings['_cp_recipe_yields'] ? $c2_recipe_settings['_cp_recipe_yields'] : false );
+		$recipe_settings['nutrition']['servings'] = ( isset($c2_recipe_settings['_cp_recipe_nutrition_servingsize']) && $c2_recipe_settings['_cp_recipe_nutrition_servingsize'] ? preg_replace("/[^0-9]/","",$c2_recipe_settings['_cp_recipe_nutrition_servingsize']) : false );
 		$recipe_settings['nutrition']['calories'] = ( isset($c2_recipe_settings['_cp_recipe_nutrition_calories']) && $c2_recipe_settings['_cp_recipe_nutrition_calories'] ? preg_replace("/[^0-9]/","",$c2_recipe_settings['_cp_recipe_nutrition_calories']) : false );
 		$recipe_settings['nutrition']['fat'] = ( isset($c2_recipe_settings['_cp_recipe_nutrition_fat']) && $c2_recipe_settings['_cp_recipe_nutrition_fat'] ? preg_replace("/[^0-9]/","",$c2_recipe_settings['_cp_recipe_nutrition_fat']) : false );
 		$recipe_settings['nutrition']['sat_fat'] = ( isset($c2_recipe_settings['_cp_recipe_nutrition_satfat']) && $c2_recipe_settings['_cp_recipe_nutrition_satfat'] ? preg_replace("/[^0-9]/","",$c2_recipe_settings['_cp_recipe_nutrition_satfat']) : false );

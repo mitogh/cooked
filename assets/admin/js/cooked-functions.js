@@ -7,6 +7,7 @@ var $_CookedConditionalTimeout  = false;
 	    var $_CookedColorPickers 			= $('.cooked-color-field'),
 	    	$_CookedSelectFields 			= $('#cooked_recipe_settings').find('select'),
 			$_CookedRecipeTabs 				= $('#cooked-recipe-tabs'),
+			$_CookedRecipeSettingsWrap 		= $('#cooked-settings-wrap'),
 			$_CookedRecipeSettings 			= $('#cooked_recipe_settings'),
 			$_CookedRecipeSettingsSubmit 	= $_CookedRecipeSettings.find( 'input#submit' )
 	    	$_CookedTooltips 				= $('.cooked-tooltip'),
@@ -177,7 +178,7 @@ var $_CookedConditionalTimeout  = false;
 	    	$_CookedTooltips.tooltipster({
 		    	theme			: 'tooltipster-light',
 		    	animation		: 'grow',
-		    	delay			: 150,
+		    	delay			: 100,
 		    	speed			: 200,
 		    	maxWidth		: 275,
                 contentAsHTML	: true,
@@ -281,7 +282,7 @@ var $_CookedConditionalTimeout  = false;
 			var graySwitches = Array.prototype.slice.call(document.querySelectorAll('.cooked-switch-gray'));
 
 			greenSwitches.forEach(function( html ) {
-				var greenSwitchery = new Switchery( html, { color: '#07a780', size: 'small' } );
+				var greenSwitchery = new Switchery( html, { color: '#00c086', size: 'small' } );
 			});
 
 			redSwitches.forEach(function( html ) {
@@ -310,8 +311,10 @@ var $_CookedConditionalTimeout  = false;
 			    var scroll = $(window).scrollTop();
 			    if (scroll >= $_CookedSettingsTabOffset) {
 			        $_CookedSettingsPanel.addClass("stuck");
+			        $("#cooked-settings-wrap").addClass("is-stuck");
 			    } else {
 				    $_CookedSettingsPanel.removeClass("stuck");
+				    $("#cooked-settings-wrap").removeClass("is-stuck");
 			    }
 			});
 
@@ -338,8 +341,6 @@ var $_CookedConditionalTimeout  = false;
 
 			$_CookedSettingsTab.on('click',function(e){
 
-				window.scrollTo(0,0);
-
 				$('.tab-content').hide();
 				var thisTab = $(this).find('a');
 				$_CookedSettingsTabs.find('li').removeClass('active');
@@ -357,6 +358,12 @@ var $_CookedConditionalTimeout  = false;
 
 				$('.cooked-settings-tab-content').hide();
 				$('#cooked-settings-tab-content-'+activeTab).show();
+
+				if ( $('#cooked-settings-panel').hasClass('stuck') ) {
+					window.scrollTo(0,130);
+				} else {
+					window.scrollTo(0,0);
+				}
 
 			});
 		}
@@ -745,7 +752,7 @@ function cooked_reset_ingredient_builder(){
 
 	ingredientBlocks.each(function(){
 
-		var randomKeyForInterval = cooked_get_random_int(100000000000,999999999999);
+		var randomKeyForInterval = cooked_get_random_int(10000000,99999999);
 		total_blocks++;
 
 		// Set the input "name" values.
@@ -787,7 +794,7 @@ function cooked_reset_direction_builder(){
 
 	directionBlocks.each(function(){
 
-		var randomKeyForInterval = cooked_get_random_int(100000000000,999999999999);
+		var randomKeyForInterval = cooked_get_random_int(10000000,99999999);
 		total_blocks++;
 
 		// Set the input "name" values.

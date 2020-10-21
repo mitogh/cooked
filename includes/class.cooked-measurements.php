@@ -223,7 +223,7 @@ class Cooked_Measurements {
 					'pdv' => apply_filters( 'cooked_pdv_potassium', 3500 )
 				),
 				'carbs' => array(
-					'name' => ( $_cooked_settings['carb_format'] == 'total' ? esc_html__('Total Carbohydrate','cooked') : esc_html__('Net Carbohydrate','cooked') ),
+					'name' => ( isset( $_cooked_settings['carb_format'] ) && $_cooked_settings['carb_format'] == 'total' ? esc_html__('Total Carbohydrate','cooked') : esc_html__('Net Carbohydrate','cooked') ),
 					'type' => 'number',
 					'measurement' => 'g',
 					'pdv' => apply_filters( 'cooked_pdv_carbs', 300 ),
@@ -465,7 +465,7 @@ class Cooked_Measurements {
 			$expression = preg_replace( '/[^0-9\+\-\*\/\(\)\.\,]/', '', esc_html($expression) );
 			$invalid = ( '/' == substr($expression,-1) ? true : false ); // More checks can be done here if needed.
 			if ( !$invalid ):
-				eval('$o = ' . $expression . ';' );
+				eval( '$o = ' . $expression . ';' );
 				return $o;
 			else:
 				return 0;
@@ -483,16 +483,16 @@ class Cooked_Measurements {
 			$amount_parts = explode(' ', $amount);
 			$total_parts = count($amount_parts);
 
-			if($total_parts === 1) {
-				$amount = self::math($amount);
-				$amount = floatval($amount);
-			} elseif($total_parts === 2) {
-				$full_part = $amount_parts[0];
-				$fractional_part = self::math($amount_parts[1]);
+			if( $total_parts === 1 ) {
+				$amount = self::math( $amount );
+				$amount = floatval( $amount );
+			} elseif( $total_parts === 2 ) {
+				$full_part = floatval( $amount_parts[0] );
+				$fractional_part = floatval( self::math( $amount_parts[1] ) );
 				$amount = $full_part + $fractional_part;
-				$amount = floatval($amount);
+				$amount = floatval( $amount );
 			} else {
-				$amount = floatval($amount);
+				$amount = floatval( $amount );
 			}
 
 		} else {
@@ -533,13 +533,19 @@ class Cooked_Measurements {
 		$decimal = $fraction_parts[0] / $fraction_parts[1];
 
 		if ($decimal < 1):
-			$decimal_array = array( 0.125, 0.200, 0.250, 0.333, 0.500, 0.666, 0.750, 0.875 );
+			$decimal_array = array( 0.125, 0.166, 0.200, 0.250, 0.333, 0.500, 0.666, 0.750, 0.875 );
 			$closest_decimal = self::get_closest_decimal( $decimal, $decimal_array );
 
 			switch($closest_decimal):
 
 				case 0.125:
 					return '1/8';
+				break;
+				case 0.166:
+					return '1/6';
+				break;
+				case 0.200:
+					return '1/5';
 				break;
 				case 0.250:
 					return '1/4';
@@ -602,6 +608,8 @@ class Cooked_Measurements {
 
 		$fractions_a = array(
 			array('⅛','&#8539;','&#215B;','&frac18;'),
+			array('⅙','&#8537;','&#x2159;','&frac16;'),
+			array('⅕','&#8533;','&#x2155;','&frac15;'),
 			array('¼','&#188;','&#xBC;','&frac14;'),
 			array('⅓','&#8531;','&#2153;','&frac13;'),
 			array('½','&#189;','&#xBD;','&frac12;'),
@@ -613,6 +621,8 @@ class Cooked_Measurements {
 
 		$fractions_b = array(
 			'1/8',
+			'1/6',
+			'1/5',
 			'1/4',
 			'1/3',
 			'1/2',
@@ -624,6 +634,8 @@ class Cooked_Measurements {
 
 		$fractions_c = array(
 			'&#8539;',
+			'&#8537;',
+			'&#8533;',
 			'&#188;',
 			'&#8531;',
 			'&#189;',

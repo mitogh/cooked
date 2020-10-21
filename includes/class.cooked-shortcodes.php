@@ -130,6 +130,7 @@ class Cooked_Shortcodes {
 				'compact' => false,
 				'hide_browse' => false,
 				'hide_sorting' => false,
+				'exclude' => false,
 			) ), $sc_atts
 		);
 
@@ -188,21 +189,23 @@ class Cooked_Shortcodes {
 		$atts = shortcode_atts(
 			array(
 				'hide_empty' => true,
-				'child_of' => false
+				'child_of' => false,
+				'style' => 'block'
 			), $atts
 		);
 
 		$hide_empty = esc_attr( $atts['hide_empty'] );
 		$child_of = esc_attr( $atts['child_of'] );
+		$style = esc_attr( $atts['style'] );
 		$parents_only = ( $child_of ? false : true );
 
 		ob_start();
 
 		$categories_array = Cooked_Settings::terms_array( 'cp_recipe_category', false, false, $hide_empty, $parents_only, $child_of );
 		if ( !empty($categories_array) ):
-			echo '<div class="cooked-recipe-term-grid cooked-clearfix">';
+			echo ( $style == 'list' ? '<div class="cooked-recipe-term-list">' : '<div class="cooked-recipe-term-grid cooked-clearfix">' );
 				foreach( $categories_array as $key => $val ):
-					Cooked_Taxonomies::single_taxonomy_block( $key );
+					Cooked_Taxonomies::single_taxonomy_block( $key, $style );
 				endforeach;
 			echo '</div>';
 		endif;
@@ -333,6 +336,8 @@ class Cooked_Shortcodes {
 				case 'cooked':
 
 					if ( isset($recipe_settings['gallery']['items']) && !empty($recipe_settings['gallery']['items']) || isset($recipe_settings['gallery']['video_url']) && $recipe_settings['gallery']['video_url'] ):
+
+
 
 						// Gallery Options
 						// Developers: Filter these to change!
@@ -812,7 +817,11 @@ class Cooked_Shortcodes {
 		);
 
 		global $recipe_settings;
-		$recipe_settings = ( $atts['id'] ? $recipe_settings = Cooked_Recipes::get( esc_attr( $atts['id'] ), true ) : !empty($recipe_settings) ? $recipe_settings : false );
+		if ( isset( $atts['id'] ) && $atts['id'] ):
+			$recipe_settings = Cooked_Recipes::get( esc_attr( $atts['id'] ), true );
+		else:
+			$recipe_settings = ( !empty($recipe_settings) ? $recipe_settings : false );
+		endif;
 
 		$float = esc_attr($atts['float']);
 
@@ -868,7 +877,7 @@ class Cooked_Shortcodes {
 			$main_facts = $_nf_fields['main'];
 			$nut_loops = 0;
 
-			if (!empty($mid_facts)):
+			if (!empty($main_facts)):
 
 				// Start output buffer for main facts.
 				ob_start();
@@ -970,7 +979,7 @@ class Cooked_Shortcodes {
 					echo '<div class="cooked-nutrition-title">' . esc_html__('Nutrition Facts','cooked') . '</div>';
 					echo $nutrition_facts_content;
 					if ( isset($main_facts_content) && $main_facts_content || isset($bottom_facts_content) && $bottom_facts_content ):
-						echo '<p class="cooked-daily-value-text">' . esc_html__('Percent Daily Values are based on a 2,000 calorie diet. Your daily value may be higher or lower depending on your calorie needs.','cooked') . '</p>';
+						echo '<p class="cooked-daily-value-text">* ' . esc_html__('Percent Daily Values are based on a 2,000 calorie diet. Your daily value may be higher or lower depending on your calorie needs.','cooked') . '</p>';
 					endif;
 				echo '</div>';
 

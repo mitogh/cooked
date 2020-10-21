@@ -71,7 +71,7 @@ class Cooked_Taxonomies {
 
 	}
 
-	public static function single_taxonomy_block( $term_id = false ){
+	public static function single_taxonomy_block( $term_id = false, $style = "block", $taxonomy = "cp_recipe_category" ){
 
 		if ( !$term_id )
 			return;
@@ -79,9 +79,16 @@ class Cooked_Taxonomies {
 		$term = get_term( $term_id );
 		if ( !empty($term) ):
 
-			echo '<div class="cooked-term-block cooked-col-25">';
-				echo do_shortcode( '[cooked-recipe-card style="modern-centered" category="' . esc_attr( $term_id ) . '"]');
-			echo '</div>';
+			if ( $style == "block" ):
+				echo '<div class="cooked-term-block cooked-col-25">';
+					echo do_shortcode( '[cooked-recipe-card style="modern-centered" category="' . esc_attr( $term_id ) . '"]');
+				echo '</div>';
+			elseif( $style == "list" ):
+				echo '<div class="cooked-term-item">';
+					$term_name = apply_filters( 'cooked_term_name', $term->name, $term->term_id, $taxonomy );
+					echo '<a href="' . esc_url( get_term_link( $term->term_id, $taxonomy ) ) . '">' . $term_name . '</a>';
+				echo '</div>';
+			endif;
 
 		endif;
 
@@ -112,7 +119,7 @@ class Cooked_Taxonomies {
 			$recipes = Cooked_Recipes::get( $args );
 			$recent_recipe = $recipes[0];
 			$total_recipes = count( $recipes ) - 1; // Total items in array minus the single ['raw'] item.
-			$thumbnail = get_the_post_thumbnail( $recent_recipe['id'], array( 450,450 ) );
+			$thumbnail = get_the_post_thumbnail_url( $recent_recipe['id'], array( 450,450 ) );
 			$term_link = ( !empty($term) ? get_term_link( $term ) : false );
 			$style_class = ( $style ? ' cooked-recipe-card-' . esc_attr($style) : '' );
 			$width = ( !$width ? '100%' : $width );
@@ -125,7 +132,7 @@ class Cooked_Taxonomies {
 
 			echo '<a href="' . esc_url( $term_link ) . '" class="cooked-recipe-taxonomy-card cooked-recipe-card' . $style_class . '" style="width:100%; max-width:' . $width . '">';
 
-				echo ( $thumbnail && !$hide_image ? '<span class="cooked-recipe-card-image">' . $thumbnail . '</span>' : '' );
+				echo ( $thumbnail && !$hide_image ? '<span class="cooked-recipe-card-image" style="background-image:url(' . $thumbnail . ');"></span>' : '' );
 
 				echo '<span class="cooked-recipe-card-content">';
 

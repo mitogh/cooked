@@ -23,6 +23,7 @@ class Cooked_Widgets {
 			'Cooked_Widget_Nutrition',
 			'Cooked_Widget_Search',
 			'Cooked_Widget_Recipe_List',
+			'Cooked_Widget_Recipe_Categories',
 			'Cooked_Widget_Recipe_Card',
 		));
 		if ( !empty($widgets) ):

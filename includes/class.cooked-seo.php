@@ -14,13 +14,22 @@ class Cooked_SEO {
 
     public static function json_ld( $recipe = false ){
 
-        $schema_values_json = json_encode( self::schema_values( $recipe ) );
+        global $_cooked_settings;
+        if ( !in_array( 'disable_schema_output', $_cooked_settings['advanced'] ) ):
 
-        $schema_html = '<script type="application/ld+json">';
-            $schema_html .= $schema_values_json;
-        $schema_html .= '</script>';
+            $schema_values_json = json_encode( self::schema_values( $recipe ) );
 
-        return apply_filters( 'cooked_schema_html', $schema_html, $recipe );
+            $schema_html = '<script type="application/ld+json">';
+                $schema_html .= $schema_values_json;
+            $schema_html .= '</script>';
+
+            return apply_filters( 'cooked_schema_html', $schema_html, $recipe );
+
+        else:
+
+            return '';
+
+        endif;
 
     }
 
@@ -80,7 +89,7 @@ class Cooked_SEO {
             'datePublished' => get_the_date( 'Y-m-d', $recipe['id'] ),
             'name' => ( isset($recipe['title']) ? $recipe['title'] : '' ),
             'image' => $recipe_thumbnail,
-            'description' => ( isset($recipe['excerpt']) && $recipe['excerpt'] ? $recipe['excerpt'] : ( isset($recipe['title']) ? $recipe['title'] : '' ) ),
+            'description' => ( isset($recipe['seo_description']) && $recipe['seo_description'] ? $recipe['seo_description'] : ( isset($recipe['excerpt']) && $recipe['excerpt'] ? $recipe['excerpt'] : ( isset($recipe['title']) ? $recipe['title'] : '' ) ) ),
             'recipeIngredient' => $ingredients,
             'recipeCategory' => $category_name,
             'recipeYield' => ( isset($recipe['nutrition']['servings']) && $recipe['nutrition']['servings'] ? $recipe['nutrition']['servings'] : '' ),
@@ -101,8 +110,7 @@ class Cooked_SEO {
                 'sugarContent' => ( isset($recipe['nutrition']['sugars']) && $recipe['nutrition']['sugars'] ? $recipe['nutrition']['sugars'] : '' ),
                 'transFatContent' => ( isset($recipe['nutrition']['trans_fat']) && $recipe['nutrition']['trans_fat'] ? $recipe['nutrition']['trans_fat'] : '' )
             ),
-            'recipeInstructions' => $directions,
-            'aggregateRating' => 0
+            'recipeInstructions' => $directions
         ), $rpost, $recipe );
 
         return $schema_array;

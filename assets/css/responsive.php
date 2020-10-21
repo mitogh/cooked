@@ -40,12 +40,14 @@ $_cooked_settings = Cooked_Settings::get();
 	.cooked-recipe-search .cooked-sortby-wrap { display:block; position:relative; width:68%; right:auto; top:auto; float:left; margin:0; }
 	.cooked-recipe-search .cooked-sortby-wrap > select { position:absolute; width:100%; border:1px solid rgba(0,0,0,.15); }
 	.cooked-recipe-search .cooked-browse-search-button { width:30%; right:auto; position:relative; display:block; float:right; }
-	.cooked-recipe-search .cooked-browse-select-block { top:3rem; left:0; max-height:16rem; overflow:auto; transform:translate3d(0,-1px,0); }
+	.cooked-recipe-search .cooked-browse-select-block { top:3rem; left:-1px; width:calc( 100% + 2px ) !important; border-radius:0 0 10px 10px; max-height:16rem; overflow:auto; transform:translate3d(0,-1px,0); }
 	.cooked-recipe-search .cooked-fields-wrap.cooked-1-search-fields .cooked-browse-select-block { width:100%; padding:1.5rem; }
 	.cooked-recipe-search .cooked-fields-wrap.cooked-2-search-fields .cooked-browse-select-block { width:100%; padding:1.5rem; }
 	.cooked-recipe-search .cooked-fields-wrap.cooked-3-search-fields .cooked-browse-select-block { width:100%; padding:1.5rem; }
 	.cooked-recipe-search .cooked-fields-wrap.cooked-4-search-fields .cooked-browse-select-block { width:100%; padding:1.5rem; }
-	.cooked-recipe-search .cooked-browse-select-block .cooked-tax-column { float:none; padding:0 0 1.5rem 0; }
+	.cooked-recipe-search .cooked-browse-select-block { flex-wrap:wrap; max-height:20rem; }
+	.cooked-recipe-search .cooked-browse-select-block .cooked-tax-column { width:100%; min-width:100%; padding:0 0 1.5rem; }
+	.cooked-recipe-search .cooked-browse-select-block .cooked-tax-column > div { max-height:none; }
 	.cooked-recipe-search .cooked-browse-select-block .cooked-tax-column:last-child { padding:0; }
 	.cooked-recipe-search .cooked-fields-wrap.cooked-1-search-fields .cooked-browse-select-block .cooked-tax-column { width:100%; }
 	.cooked-recipe-search .cooked-fields-wrap.cooked-2-search-fields .cooked-browse-select-block .cooked-tax-column { width:100%; }

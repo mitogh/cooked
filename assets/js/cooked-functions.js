@@ -9,11 +9,8 @@ Contents:
 3. Ingredients
 4. Servings Switcher
 5. Browse Search Button
-6. Ajax Recipe Lists (Load More)
-7. Masonry Recipe Grid
-8. Timers
-9. Full-Screen Mode
-10. Time Pickers
+6. Timers
+7. Full-Screen Mode
 
 */
 
@@ -25,7 +22,6 @@ var cooked_loading = false;
 
     $_Cooked_Ingredient_Boxes = $('.cooked-ingredient-checkbox');
     $_Cooked_Fotorama = $('.cooked-recipe-gallery');
-    $_Cooked_Masonry = $('.cooked-masonry');
     $_Cooked_Ajax_List = $('.cooked-recipe-loader');
     $_Cooked_Recipe_Search = $('.cooked-recipe-search');
     $_Cooked_Timers = $('.cooked-timer > a');
@@ -76,7 +72,7 @@ var cooked_loading = false;
     		var servingsSelectField = $('.cooked-servings').find('select');
     		servingsSelectField.on('change',function(e){
     			e.preventDefault();
-    			var thisVal = servingsSelectField.find('option:selected').val();
+    			var thisVal = $(this).children("option:selected").val();
     			window.location = thisVal;
     		});
     	}
@@ -114,49 +110,13 @@ var cooked_loading = false;
             var browseSearchButton = $('.cooked-browse-search-button');
             browseSearchButton.on('click',function(e){
                 e.preventDefault();
-                browseSearchButton.parents('form').trigger('submit');
+                var thisButton = $(this);
+                thisButton.parents('form').trigger('submit');
             });
 
         }
 
-        /****   6. Ajax Recipe Lists (Load More)   ****/
-
-        if ( $_Cooked_Ajax_List.length ){
-
-            // Only after the images are loaded...
-            $_Cooked_Ajax_List.imagesLoaded( function() {
-
-                var i = 0,
-                    recipe,
-                    recipes = $_Cooked_Ajax_List.find('.cooked-recipe'),
-                    totalRecipes = $_Cooked_Ajax_List.find('.cooked-recipe').length;
-
-                var loadRecipes = setInterval(function() {
-                    recipe = recipes[i++];
-                    $(recipe).addClass('cooked-recipe-loaded');
-                    if(i >= totalRecipes) clearInterval(loadRecipes);
-                }, 50);
-
-            });
-
-        }
-
-        /****   7. Masonry Recipe Grid   ****/
-
-        if ( $_Cooked_Masonry.length ){
-
-            $_Cooked_Masonry.imagesLoaded( function() {
-
-                $_Cooked_Masonry.masonry({
-                    itemSelector: '.cooked-recipe',
-                    transitionDuration: 0
-                });
-
-            });
-
-        }
-
-        /****   10. Timers   ****/
+        /****   6. Timers   ****/
 
         function init_cooked_timers( Cooked_Timers ){
 
@@ -242,6 +202,9 @@ var cooked_loading = false;
 
         function cookedTimer( timerObj, startPaused ){
 
+            var timer_sound = cooked_js_vars.timer_sound;
+            var audio = new Audio( timer_sound );
+
             var thisTimerID = timerObj.parents('.cooked-timer-block').attr('id'),
                 secondsLeft = timerObj.data('seconds-left'),
                 parentBlock = timerObj.parents('.cooked-timer-block');
@@ -255,6 +218,7 @@ var cooked_loading = false;
                     timeout: 'cooked-timer-timeout'
                 },
                 onComplete: function(){
+                    audio.play();
                     timerObj.addClass( 'cooked-timer-complete' );
                 }
             });
@@ -277,6 +241,7 @@ var cooked_loading = false;
             });
 
             timerObj.on( 'complete', function( e,timeLeft ){
+                audio.play();
                 parentBlock.find('i.cooked-icon-pause').hide();
                 parentBlock.find('i.cooked-icon-play').hide();
                 parentBlock.find('.cooked-timer-seconds').html('00');
@@ -349,7 +314,7 @@ var cooked_loading = false;
 
         }
 
-        /****   11. Full-Screen Mode   ****/
+        /****   7. Full-Screen Mode   ****/
 
         if ($_Cooked_FSM_Button.length){
 

@@ -32,6 +32,7 @@ class Cooked_Enqueues {
 
 		$cooked_js_vars = array(
 			'ajax_url' => admin_url( 'admin-ajax.php' ),
+			'timer_sound' => apply_filters( 'cooked_timer_sound_mp3', COOKED_URL . 'assets/audio/ding.mp3' ),
 			'i18n_timer' => esc_html__( 'Timer','cooked' ),
 		);
 
@@ -40,14 +41,13 @@ class Cooked_Enqueues {
 		wp_enqueue_style( 'cooked-essentials', COOKED_URL . 'assets/admin/css/essentials'.$min.'.css', array(), COOKED_VERSION );
 		wp_enqueue_style( 'cooked-icons', COOKED_URL . 'assets/css/icons'.$min.'.css', array(), COOKED_VERSION );
 		wp_enqueue_style( 'cooked-styling', COOKED_URL . 'assets/css/style'.$min.'.css', array(), COOKED_VERSION );
-		wp_register_style( 'cooked-fotorama-style', '//cdnjs.cloudflare.com/ajax/libs/fotorama/4.6.4/fotorama.css', array(), '4.6.4' );
-		wp_register_script( 'cooked-fotorama-js', '//cdnjs.cloudflare.com/ajax/libs/fotorama/4.6.4/fotorama.js', array('jquery'), '4.6.4', true );
-		wp_register_script( 'cooked-masonry', COOKED_URL . 'assets/js/masonry/masonry.pkgd.min.js', array('jquery'), '4.2.0', true );
-		wp_register_script( 'cooked-imagesLoaded', '//npmcdn.com/imagesloaded@4.1.3/imagesloaded.pkgd.min.js', array('jquery'), '4.1.3', true );
+		wp_register_style( 'cooked-fotorama-style', COOKED_URL . 'assets/css/fotorama/fotorama.min.css', array(), '4.6.4' );
+		wp_register_script( 'cooked-fotorama-js', COOKED_URL . 'assets/js/fotorama/fotorama.min.js', array('jquery'), '4.6.4', true );
+		wp_register_script( 'cooked-timer', COOKED_URL . 'assets/js/timer/jquery.simple.timer.min.js', array('jquery'), COOKED_VERSION, true );
+
 		if ( !defined('QODE_ROOT') ): // Compatibility with the Bridge Theme
 			wp_register_script( 'cooked-appear-js', COOKED_URL . 'assets/js/appear/jquery.appear.min.js', array('jquery'), COOKED_VERSION, true );
 		endif;
-		wp_register_script( 'cooked-timer', COOKED_URL . 'assets/js/timer/jquery.simple.timer.min.js', array('jquery'), COOKED_VERSION, true );
 
 		wp_register_script( 'cooked-functions-js', COOKED_URL . 'assets/js/cooked-functions'.$min.'.js', array('jquery'), COOKED_VERSION, true );
 		wp_localize_script( 'cooked-functions-js', 'cooked_js_vars', $cooked_js_vars );
@@ -85,10 +85,6 @@ class Cooked_Enqueues {
 	}
 
 	public static function compress_css($css){
-
-		// Remove Comments
-		$regex = array("`^([\t\s]+)`ism"=>'',"`^\/\*(.+?)\*\/`ism"=>"","`([\n\A;]+)\/\*(.+?)\*\/`ism"=>"$1","`([\n\A;\s]+)//(.+?)[\n\r]`ism"=>"$1\n","`(^[\r\n]*|[\r\n]+)[\s\t]*[\r\n]+`ism"=>"\n");
-		$css = preg_replace(array_keys($regex),$regex,$css);
 
 	    // Remove tabs, spaces, newlines, etc.
 	    $css = str_replace( array("\r\n", "\r", "\n", "\t", '  ', '    ', '    '), '', $css );
