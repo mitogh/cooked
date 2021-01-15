@@ -52,6 +52,7 @@ class Cooked_SEO {
 
         if ( isset($recipe['ingredients']) && !empty($recipe['ingredients']) ):
             foreach ( $recipe['ingredients'] as $ing ):
+                if ( isset( $ing['section_heading_name'] ) ): continue; endif;
                 $ingredient = Cooked_Recipes::single_ingredient( $ing, false, true );
                 $ingredient_cleaned = strip_tags( preg_replace("~(?:\[/?)[^/\]]+/?\]~s", '', $ingredient) );
                 $ingredients[] = $ingredient_cleaned;

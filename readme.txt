@@ -2,8 +2,8 @@
 Contributors: boxystudio
 Tags: recipe, recipes, food, cooking, chef, culinary, nutrition, seo
 Requires at least: 4.7
-Tested up to: 5.5.1
-Stable tag: 1.7.8.1
+Tested up to: 5.6
+Stable tag: 1.7.8.4
 Requires PHP: 5.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -82,6 +82,16 @@ This version is **not** the same plugin. It has been completely rebuilt from the
 Version 1.7.8 fixes a few PHP 7.4 bugs and now replaces page titles on taxonomy pages when the Browse Recipes page is used.
 
 == Changelog ==
+
+= 1.7.8.4 =
+* **FIX:** Removed "Section Headings" from recipe schema output.
+
+= 1.7.8.3 =
+* **FIX:** Another patch release for taxonomy title bugs (sorry!).
+* **FIX:** This particular patch prevents the navigation items from getting renamed.
+
+= 1.7.8.2 =
+* **FIX:** Another patch release for taxonomy titles.
 
 = 1.7.8.1 =
 * **FIX:** Patch release for some quick taxonomy title fixes.

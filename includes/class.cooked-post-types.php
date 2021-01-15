@@ -38,16 +38,31 @@ class Cooked_Post_Types {
 		// Taxonomy Titles
 		add_action( 'template_redirect', array( &$this, 'remove_default_title_tag' ) );
 		add_filter( 'the_title', array( &$this, 'taxonomy_page_title' ), 10, 2 );
+		add_filter( 'pre_wp_nav_menu', array( &$this, 'disable_taxonomy_page_title' ), 10, 2 );
+		add_filter( 'wp_nav_menu_items', array( &$this, 'enable_taxonomy_page_title' ), 10, 2 );
 		add_filter( 'wp_title', array( &$this, 'taxonomy_meta_title' ), 10 );
 
 	}
 	
-	public static function taxonomy_meta_title( $title = '' ){
+	function disable_taxonomy_page_title( $nav_menu, $args ) {
+		remove_filter( 'the_title', array( &$this, 'taxonomy_page_title' ), 10, 2 );
+		return $nav_menu;
+	}
+	
+	function enable_taxonomy_page_title( $items, $args ) {
+		add_filter( 'the_title', array( &$this, 'taxonomy_page_title' ), 10, 2 );
+		return $items;
+	}
+	
+	function taxonomy_page_title( $title = '', $id = 0 ){
+		
+		if ( is_admin() )
+			return $title;
 		
 		global $wp_query, $post, $_cooked_settings;
 		$browse_page_id = $_cooked_settings['browse_page'];
 		
-		if ( $id == $browse_page_id && isset($wp_query->query['cp_recipe_category']) && taxonomy_exists('cp_recipe_category') && term_exists( $wp_query->query['cp_recipe_category'], 'cp_recipe_category' ) ):
+		if ( is_page( $browse_page_id ) && $id == $browse_page_id && isset($wp_query->query['cp_recipe_category']) && taxonomy_exists('cp_recipe_category') && term_exists( $wp_query->query['cp_recipe_category'], 'cp_recipe_category' ) ):
 			$cooked_term = get_term_by( 'slug', $wp_query->query['cp_recipe_category'], 'cp_recipe_category' );
 			return $cooked_term->name;
 		endif;
@@ -56,12 +71,12 @@ class Cooked_Post_Types {
 		
 	}
 	
-	public static function taxonomy_page_title( $title = '', $id = 0 ){
+	function taxonomy_meta_title( $title = '' ){
 		
 		global $wp_query, $post, $_cooked_settings;
 		$browse_page_id = $_cooked_settings['browse_page'];
 		
-		if ( $id == $browse_page_id && isset($wp_query->query['cp_recipe_category']) && taxonomy_exists('cp_recipe_category') && term_exists( $wp_query->query['cp_recipe_category'], 'cp_recipe_category' ) ):
+		if ( is_page( $browse_page_id ) && $post->ID == $browse_page_id && isset($wp_query->query['cp_recipe_category']) && taxonomy_exists('cp_recipe_category') && term_exists( $wp_query->query['cp_recipe_category'], 'cp_recipe_category' ) ):
 			$cooked_term = get_term_by( 'slug', $wp_query->query['cp_recipe_category'], 'cp_recipe_category' );
 			return $cooked_term->name;
 		endif;
