@@ -59,7 +59,8 @@ class Cooked_Shortcodes {
 			array(
 				'compact' => false,
 				'hide_browse' => false,
-				'hide_sorting' => false
+				'hide_sorting' => false,
+				'inline_browse' => false,
 			), $atts
 		);
 
@@ -131,6 +132,7 @@ class Cooked_Shortcodes {
 				'hide_browse' => false,
 				'hide_sorting' => false,
 				'exclude' => false,
+				'inline_browse' => false,
 			) ), $sc_atts
 		);
 

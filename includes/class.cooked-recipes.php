@@ -909,66 +909,76 @@ class Cooked_Recipes {
 
 		$total_taxonomies = 0;
 
+		$inline_browse = ( isset($options['inline_browse']) && $options['inline_browse'] ? true : false );
+
 		ob_start();
 		if ( !empty($_cooked_settings['recipe_taxonomies']) ):
 
-			echo '<div class="cooked-field-wrap cooked-field-wrap-select' . ( isset($active_taxonomy) ? ' cooked-taxonomy-selected' : '' ) . '">';
+			if ( !$inline_browse ):
+				
+				echo '<div class="cooked-field-wrap cooked-field-wrap-select' . ( isset($active_taxonomy) ? ' cooked-taxonomy-selected' : '' ) . '">';
 				echo '<span class="cooked-browse-select">';
-					echo '<span class="cooked-field-title">' . ( isset($active_taxonomy) ? $active_taxonomy : esc_html__('Browse','cooked') ) . '</span>';
+				echo '<span class="cooked-field-title">' . ( isset($active_taxonomy) ? $active_taxonomy : esc_html__('Browse','cooked') ) . '</span>';
+				echo '<span class="cooked-browse-select-block cooked-clearfix">';
 
-					echo '<span class="cooked-browse-select-block cooked-clearfix">';
+			endif;
+			
+			ob_start();
+			
+				do_action( 'cooked_before_search_filter_columns' );
 
-						do_action( 'cooked_before_search_filter_columns' );
+				if ( isset($active_taxonomy) ):
+					$recipes_page_id = ( $_cooked_settings['browse_page'] ? $_cooked_settings['browse_page'] : get_the_ID() );
+					$view_all_recipes_url = get_permalink( $recipes_page_id );
+				else:
+					$view_all_recipes_url = false;
+				endif;
 
-						if ( isset($active_taxonomy) ):
-							$recipes_page_id = ( $_cooked_settings['browse_page'] ? $_cooked_settings['browse_page'] : get_the_ID() );
-							$view_all_recipes_url = get_permalink( $recipes_page_id );
-						else:
-							$view_all_recipes_url = false;
-						endif;
-
-						if ( in_array( 'cp_recipe_category',$_cooked_settings['recipe_taxonomies']) ):
-							$terms_array = Cooked_Settings::terms_array( 'cp_recipe_category', false, esc_html__('No categories','cooked'), true, true, false );
-							if ( !empty($terms_array) ):
-								echo '<span class="cooked-tax-column">';
-									echo '<span class="cooked-tax-column-title">' . esc_html__('Categories','cooked') . '</span>';
-									echo '<div class="cooked-tax-scrollable">';
-										echo ( $view_all_recipes_url ? '<a href="' . $view_all_recipes_url . '">' . esc_html__( 'All Categories','cooked' ) . '</a>' : '' );
-										foreach( $terms_array as $key => $val ):
-											if ( $key ):
-												$term = get_term( $key );
-												$term_link = ( !empty($term) ? get_term_link( $term ) : false );
-												$term_name = apply_filters( 'cooked_term_name', $term->name, $term->ID, $term->taxonomy );
-												echo ( $term_link ? ( isset($active_taxonomy) && $active_taxonomy == $val ? '<strong><i class="cooked-icon cooked-icon-angle-right"></i>&nbsp;&nbsp;' : '' ) . '<a href="' . $term_link . '">' . $term_name . '</a>' . ( isset($active_taxonomy) && $active_taxonomy == $val ? '</strong>' : '' ) : '' );
-												$total_taxonomies++;
-												$sub_terms_array = Cooked_Settings::terms_array( 'cp_recipe_category', false, false, true, false, $key );
-												if ( !empty($sub_terms_array) ):
-													foreach( $sub_terms_array as $sub_key => $sub_val ):
-														if ( $sub_key ):
-															$sub_term = get_term( $sub_key );
-															$sub_term_link = ( !empty($sub_term) ? get_term_link( $sub_term ) : false );
-															$sub_term_name = apply_filters( 'cooked_term_name', $sub_term->name, $sub_term->ID, $sub_term->taxonomy );
-															echo ( $sub_term_link ? '<span class="cooked-tax-sub-item">' . ( isset($active_taxonomy) && $active_taxonomy == $sub_val ? '<strong><i class="cooked-icon cooked-icon-angle-right"></i>&nbsp;&nbsp;' : '' ) . '<a href="' . $sub_term_link . '">' . $sub_term_name . '</a>' . ( isset($active_taxonomy) && $active_taxonomy == $sub_val ? '</strong>' : '' ) . '</span>' : '' );
-															$total_taxonomies++;
-														endif;
-													endforeach;
+				if ( in_array( 'cp_recipe_category',$_cooked_settings['recipe_taxonomies']) ):
+					$terms_array = Cooked_Settings::terms_array( 'cp_recipe_category', false, esc_html__('No categories','cooked'), true, true, false );
+					if ( !empty($terms_array) ):
+						echo '<span class="cooked-tax-column">';
+							echo '<span class="cooked-tax-column-title">' . esc_html__('Categories','cooked') . '</span>';
+							echo '<div class="cooked-tax-scrollable">';
+								echo ( $view_all_recipes_url ? '<a href="' . $view_all_recipes_url . '">' . esc_html__( 'All Categories','cooked' ) . '</a>' : '' );
+								foreach( $terms_array as $key => $val ):
+									if ( $key ):
+										$term = get_term( $key );
+										$term_link = ( !empty($term) ? get_term_link( $term ) : false );
+										$term_name = apply_filters( 'cooked_term_name', $term->name, $term->ID, $term->taxonomy );
+										echo ( $term_link ? ( isset($active_taxonomy) && $active_taxonomy == $val ? '<strong><i class="cooked-icon cooked-icon-angle-right"></i>&nbsp;&nbsp;' : '' ) . '<a href="' . $term_link . '">' . $term_name . '</a>' . ( isset($active_taxonomy) && $active_taxonomy == $val ? '</strong>' : '' ) : '' );
+										$total_taxonomies++;
+										$sub_terms_array = Cooked_Settings::terms_array( 'cp_recipe_category', false, false, true, false, $key );
+										if ( !empty($sub_terms_array) ):
+											foreach( $sub_terms_array as $sub_key => $sub_val ):
+												if ( $sub_key ):
+													$sub_term = get_term( $sub_key );
+													$sub_term_link = ( !empty($sub_term) ? get_term_link( $sub_term ) : false );
+													$sub_term_name = apply_filters( 'cooked_term_name', $sub_term->name, $sub_term->ID, $sub_term->taxonomy );
+													echo ( $sub_term_link ? '<span class="cooked-tax-sub-item">' . ( isset($active_taxonomy) && $active_taxonomy == $sub_val ? '<strong><i class="cooked-icon cooked-icon-angle-right"></i>&nbsp;&nbsp;' : '' ) . '<a href="' . $sub_term_link . '">' . $sub_term_name . '</a>' . ( isset($active_taxonomy) && $active_taxonomy == $sub_val ? '</strong>' : '' ) . '</span>' : '' );
+													$total_taxonomies++;
 												endif;
-											endif;
-										endforeach;
-										$tax_col_count++;
-									echo '</div>';
-								echo '</span>';
-							endif;
-						endif;
+											endforeach;
+										endif;
+									endif;
+								endforeach;
+								$tax_col_count++;
+							echo '</div>';
+						echo '</span>';
+					endif;
+				endif;
 
-						do_action( 'cooked_after_search_filter_columns' );
-
-					echo '</span>';
-
-				echo '</span>';
-
-			echo '</div>';
-
+				do_action( 'cooked_after_search_filter_columns' );
+			
+			$browse_html = ob_get_clean();
+			
+			if ( !$inline_browse ):
+				
+				echo $browse_html;
+				echo '</span></span></div>';
+			
+			endif;
+				
 		endif;
 
 		if ( $total_taxonomies ):
@@ -1045,6 +1055,12 @@ class Cooked_Recipes {
 			echo '</form>';
 
 		echo '</section>';
+		
+		if ( $inline_browse ):
+			echo '<div class="cooked-browse-select-inline-block cooked-clearfix">';
+				echo $browse_html;
+			echo '</div>';
+		endif;
 
 		return ob_get_clean();
 

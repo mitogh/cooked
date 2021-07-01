@@ -7,7 +7,7 @@ Plugin URI: 	https://cooked.pro
 Description: 	A recipe plugin for WordPress.
 Author: 		Boxy Studio
 Author URI: 	https://boxystudio.com
-Version: 		1.7.8.5
+Version: 		1.7.9
 Text Domain: 	cooked
 Domain Path: 	languages
 License:     	GPL2
@@ -30,7 +30,7 @@ along with Cooked. If not, see http://www.gnu.org/licenses/.
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-define( 'COOKED_VERSION', '1.7.8.5' );
+define( 'COOKED_VERSION', '1.7.9' );
 define( 'COOKED_DEV', false );
 
 if ( ! class_exists( 'Cooked_Plugin' ) ) :

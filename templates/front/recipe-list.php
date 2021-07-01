@@ -42,8 +42,9 @@ else:
 		$size = ( $atts['compact'] ? ' compact="true"' : false );
         $hide_browse = ( $atts['hide_browse'] ? ' hide_browse="true"' : false );
         $hide_sorting = ( $atts['hide_sorting'] ? ' hide_sorting="true"' : false );
+		$inline_browse = ( $atts['inline_browse'] ? ' inline_browse="true"' : false );
 
-        echo do_shortcode( '[cooked-search' . $size . $hide_browse . $hide_sorting . ']' );
+        echo do_shortcode( '[cooked-search' . $size . $hide_browse . $hide_sorting . $inline_browse . ']' );
 
 	endif;
 
