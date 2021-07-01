@@ -336,9 +336,7 @@ class Cooked_Shortcodes {
 				case 'cooked':
 
 					if ( isset($recipe_settings['gallery']['items']) && !empty($recipe_settings['gallery']['items']) || isset($recipe_settings['gallery']['video_url']) && $recipe_settings['gallery']['video_url'] ):
-
-
-
+					
 						// Gallery Options
 						// Developers: Filter these to change!
 						// Full list here: http://fotorama.io/customize/options/

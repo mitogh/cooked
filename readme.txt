@@ -2,8 +2,8 @@
 Contributors: boxystudio
 Tags: recipe, recipes, food, cooking, chef, culinary, nutrition, seo
 Requires at least: 4.7
-Tested up to: 5.6
-Stable tag: 1.7.8.4
+Tested up to: 5.7
+Stable tag: 1.7.8.5
 Requires PHP: 5.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -79,9 +79,13 @@ This version is **not** the same plugin. It has been completely rebuilt from the
 
 == Upgrade Notice ==
 
-Version 1.7.8 fixes a few PHP 7.4 bugs and now replaces page titles on taxonomy pages when the Browse Recipes page is used.
+Version 1.7.8.5 fixes a couple issues introduced with WordPress 5.7.
 
 == Changelog ==
+
+= 1.7.8.5 =
+* **FIX:** Fixed an issue with large spaces between the recipe template shortcodes
+* **FIX:** Fixed an issue with Vimeo videos in the gallery
 
 = 1.7.8.4 =
 * **FIX:** Removed "Section Headings" from recipe schema output.

@@ -1061,9 +1061,10 @@ class Cooked_Recipes {
 		if ( is_singular('cp_recipe') && is_main_query() && $_cooked_content_unfiltered == false ):
 
 			ob_start();
-			load_template( COOKED_DIR . 'templates/front/recipe.php', false );
+			include( COOKED_DIR . 'templates/front/recipe.php' );
+			//load_template( COOKED_DIR . 'templates/front/recipe.php', false );
 			$recipe_content = ob_get_clean();
-			return apply_filters( 'cooked_recipe_content_filter', $recipe_content, $content, $post->ID );
+			return shortcode_unautop( apply_filters( 'cooked_recipe_content_filter', $recipe_content, $content, $post->ID ) );
 
 		endif;
 
