@@ -735,7 +735,7 @@ class Cooked_Recipes {
 
 		if ( !$printing && !$switcher_disabled ):
 			$default = $servings;
-			$servings = esc_attr( get_query_var( 'servings', $servings ) );
+			$servings = (float)esc_html( get_query_var( 'servings', $servings ) );
 			$counter = 1;
 
 			$quarter = $default / 4;
@@ -790,7 +790,7 @@ class Cooked_Recipes {
 		elseif ( isset($ing['name']) && $ing['name'] ):
 
 			$default_serving_size = ( isset($recipe_settings['nutrition']['servings']) && $recipe_settings['nutrition']['servings'] ? $recipe_settings['nutrition']['servings'] : 1 );
-			$multiplier = get_query_var( 'servings', $recipe_settings['nutrition']['servings'] );
+			$multiplier = (float)esc_html( get_query_var( 'servings', $recipe_settings['nutrition']['servings'] ) );
 
 			if ( !$multiplier || $multiplier == $default_serving_size ):
 				$multiplier = 1;

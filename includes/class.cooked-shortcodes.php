@@ -604,7 +604,7 @@ class Cooked_Shortcodes {
 		global $recipe_settings,$_cooked_settings;
 		$recipe_post_url = get_permalink( $recipe_settings['id'] );
 		$query_args['print'] = 1;
-		$query_args['servings'] = get_query_var( 'servings', false );
+		$query_args['servings'] = (float)esc_html( get_query_var( 'servings', false ) );
 		echo '<span class="cooked-print"><a target="_blank" rel="nofollow" href="' . add_query_arg( $query_args, $recipe_post_url ) . '" class="cooked-print-icon"><i class="cooked-icon cooked-icon-print"></i></a></span>';
 	}
 
@@ -832,7 +832,7 @@ class Cooked_Shortcodes {
 
 		if ( $nutrition_facts ):
 
-			$servings_change = get_query_var( 'servings', $recipe_settings['nutrition']['servings'] );
+			$servings_change = (float)esc_html( get_query_var( 'servings', $recipe_settings['nutrition']['servings'] ) );
 
 			$top_facts = $_nf_fields['top'];
 			if (!empty($top_facts)):
