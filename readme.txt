@@ -3,7 +3,7 @@ Contributors: boxystudio
 Tags: recipe, recipes, food, cooking, chef, culinary, nutrition, seo
 Requires at least: 4.7
 Tested up to: 5.7
-Stable tag: 1.7.9
+Stable tag: 1.7.9.1
 Requires PHP: 5.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -79,9 +79,12 @@ This version is **not** the same plugin. It has been completely rebuilt from the
 
 == Upgrade Notice ==
 
-Version 1.7.9 adds a new option to the `[cooked-browse]` and `[cooked-search]` shortcodes.
+Version 1.7.9.1 fixes an XSS vulnerability with the Serving Size picker.
 
 == Changelog ==
+
+= 1.7.9.1 =
+* **FIX:** Fixes an XSS vulnerability with the Serving Size picker.
 
 = 1.7.9 =
 ** **NEW:** Added an `inline_browse` option to the `[cooked-browse]` and `[cooked-search]` shortcodes. Ex. `[cooked-browse inline_browse="true"]` This will show the taxonomies inline and not require the "Browse" button being clicked to view them.
