@@ -295,7 +295,7 @@ class Cooked_Post_Types {
 				endif;
 				$cooked_taxonomies_for_menu[] = array(
 					'menu' => 'cooked_recipes_menu',
-					'name' => $args['labels']['menu_name'],
+					'name' => isset( $args['labels']['menu_name'] ) ? $args['labels']['menu_name'] : '',,
 					'capability' => 'manage_categories',
 					'url' => 'edit-tags.php?taxonomy=' . $slug . '&post_type=cp_recipe'
 				);
